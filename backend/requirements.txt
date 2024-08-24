@@ -1,0 +1,4 @@
+
+openai-whisper
+django-cors-headers
+djangorestframework
