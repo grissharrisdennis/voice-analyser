@@ -1,30 +1,19 @@
-<<<<<<< HEAD
 import { createStore } from 'vuex'
 
 export default createStore({
   state: {
+    // Your state properties go here
   },
   getters: {
+    // Your getter functions go here
   },
   mutations: {
+    // Your mutation functions go here
   },
   actions: {
+    // Your action functions go here
   },
   modules: {
+    // Your modules go here
   }
-=======
-import { createStore } from 'vuex'
-
-export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
->>>>>>> a09a68ea8dfed890562f7050b1354fefe75e7213
 })
