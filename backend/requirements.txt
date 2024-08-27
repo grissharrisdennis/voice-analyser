@@ -1,0 +1,5 @@
+pydub
+openai-whisper
+django-cors-headers
+djangorestframework
+audio2numpy
