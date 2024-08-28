@@ -17,7 +17,7 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async login(username, password, router=null) {
-            const response = await fetch('https://GrissHarrisDennis.pythonanywhere.com/api/login/', {
+            const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', {
 
         async logout(router=null) {
             try {
-                const response = await fetch('https://GrissHarrisDennis.pythonanywhere.com/api/logout/', {
+                const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/logout/', {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': getCSRFToken()
@@ -71,7 +71,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-                const response = await fetch(`https://GrissHarrisDennis.pythonanywhere.com/api/audiofiles/user/${userId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/audiofiles/user/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-                const response = await fetch(`https://GrissHarrisDennis.pythonanywhere.com/api/transcriptions/${userId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/transcriptions/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-              const response = await fetch(`https://GrissHarrisDennis.pythonanywhere.com/api/word_frequencies/${transcriptId}/`, {
+              const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/word_frequencies/${transcriptId}/`, {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-                const response = await fetch(`https://GrissHarrisDennis.pythonanywhere.com/api/transcriptions/uphrases/${userId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/transcriptions/uphrases/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export const useAuthStore = defineStore('auth', {
         },
         async fetchUser() {
             try {
-                const response = await fetch('https://GrissHarrisDennis.pythonanywhere.com/api/user/', {
+                const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/user/', {
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
