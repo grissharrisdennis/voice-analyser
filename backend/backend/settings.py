@@ -48,7 +48,12 @@ INSTALLED_APPS = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS=['https://voice-analyser-xi.vercel.app/']
 CSRF_TRUSTED_ORIGINS = ['https://voice-analyser-xi.vercel.app/']
-APPEND_SLASH=False
+# Enable HTTPS cookies
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 MIDDLEWARE = [
    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
