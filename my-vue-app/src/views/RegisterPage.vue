@@ -50,7 +50,7 @@
     methods: {
     async signup() {
       try {
-        const response = await fetch('http://GrissHarrisDennis.pythonanywhere.com/api/register/', {
+        const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/register/', {
           
           method: 'POST',
           
