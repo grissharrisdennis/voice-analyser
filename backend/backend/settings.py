@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-a#7(v0lu4_6#xll23j4sp$#cpv!2^1tbo+l=6zv^pneuz8aqv7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['GrissHarrisDennis.pythonanywhere.com.', 'localhost']
+ALLOWED_HOSTS = ['GrissHarrisDennis.pythonanywhere.com']
 
 
 
@@ -46,8 +46,8 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS=['http://localhost:5176']
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5176']
+CORS_ALLOWED_ORIGINS=['https://voice-analyser-xi.vercel.app/']
+CSRF_TRUSTED_ORIGINS = ['https://voice-analyser-xi.vercel.app/']
 APPEND_SLASH=False
 MIDDLEWARE = [
    'django.middleware.security.SecurityMiddleware',
