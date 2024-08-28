@@ -10,14 +10,14 @@ export const useAuthStore = defineStore('auth', {
     },
     actions: {
         async setCsrfToken() {
-            await fetch('http://localhost:8000/api/set-csrf-token', {
+            await fetch('http://localhost:9000/api/set-csrf-token', {
                 method: 'GET',
                 credentials: 'include'
             })
         },
 
         async login(username, password, router=null) {
-            const response = await fetch('http://localhost:8000/api/login/', {
+            const response = await fetch('http://localhost:9000/api/login/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', {
 
         async logout(router=null) {
             try {
-                const response = await fetch('http://localhost:8000/api/logout/', {
+                const response = await fetch('http://localhost:9000/api/logout/', {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': getCSRFToken()
@@ -71,7 +71,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-                const response = await fetch(`http://localhost:8000/api/audiofiles/user/${userId}/`, {
+                const response = await fetch(`http://localhost:9000/api/audiofiles/user/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-                const response = await fetch(`http://localhost:8000/api/transcriptions/${userId}/`, {
+                const response = await fetch(`http://localhost:9000/api/transcriptions/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-              const response = await fetch(`http://localhost:8000/api/word_frequencies/${transcriptId}/`, {
+              const response = await fetch(`http://localhost:9000/api/word_frequencies/${transcriptId}/`, {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ export const useAuthStore = defineStore('auth', {
             const csrfToken = getCSRFToken();
             console.log('CSRF Token:', csrfToken);
             try {
-                const response = await fetch(`http://localhost:8000/api/transcriptions/uphrases/${userId}/`, {
+                const response = await fetch(`http://localhost:9000/api/transcriptions/uphrases/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ export const useAuthStore = defineStore('auth', {
         },
         async fetchUser() {
             try {
-                const response = await fetch('http://localhost:8000/api/user/', {
+                const response = await fetch('http://localhost:9000/api/user/', {
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
