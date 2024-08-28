@@ -1,32 +1,112 @@
-from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework import status
-from django.core.files.base import ContentFile
-from ..models import AudioFile, Transcription
-from .serializers import AudioFileSerializer, TranscriptionSerializer
-import tempfile
+from rest_framework import status, viewsets, generics
+from django.shortcuts import render,get_object_or_404
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from ..models import AudioFile, Transcription,Transcription, WordFrequency
+from .serializers import AudioFileSerializer, TranscriptionSerializer, AudioFileDetailSerializer,UserModelSerializer,WordFrequencySerializer
 from pydub import AudioSegment
-import whisper
-from audio2numpy import open_audio
+from django.contrib.auth.models import User
+import speech_recognition as sr
+import tempfile
+from django.http import JsonResponse
+from rest_framework.exceptions import NotFound
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect,csrf_exempt
+import json
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate, login, logout
+import os
+from django.contrib.auth.hashers import make_password
+import nltk
+nltk.download('punkt_tab')
+from nltk.tokenize import word_tokenize
+from collections import Counter
+from nltk import ngrams
 
-model=whisper.load_model('tiny')
+def normalize(text):
+    return text.lower().split()
 
+def get_ngrams(text, n=3):
+    words = normalize(text)
+    return list(ngrams(words, n))
+
+def unique_phrases(user_ngrams, all_users_ngrams):
+    user_ngrams_freq = Counter(user_ngrams)
+    all_users_ngrams_freq = Counter(all_users_ngrams)
+
+    unique = {phrase: freq for phrase, freq in user_ngrams_freq.items() if all_users_ngrams_freq[phrase] == 0}
+    return sorted(unique, key=unique.get, reverse=True)[:3]
+
+@require_http_methods(['GET'])
+def get_top_unique_phrases(request, user_id):
+    user_transcripts = Transcription.objects.filter(user_id=user_id)
+    all_transcripts = Transcription.objects.exclude(user_id=user_id)
+
+    user_ngrams = []
+    all_users_ngrams = []
+
+    for transcript in user_transcripts:
+        user_ngrams.extend(get_ngrams(transcript.text, n=3))
+
+    for transcript in all_transcripts:
+        all_users_ngrams.extend(get_ngrams(transcript.text, n=3))
+
+    top_unique_phrases = unique_phrases(user_ngrams, all_users_ngrams)
+
+    # Convert tuples to string for JSON response
+    top_unique_phrases = [' '.join(phrase) for phrase in top_unique_phrases]
+
+    return JsonResponse({'top_unique_phrases': top_unique_phrases})
+
+class WordFrequencyByTranscriptionIDView(generics.ListAPIView):
+    serializer_class = WordFrequencySerializer
+
+    def get_queryset(self):
+        transcription_id = self.kwargs.get('transcript_id')
+        # Return the word frequencies associated with the transcription_id
+        queryset = WordFrequency.objects.filter(transcription_id=transcription_id).order_by('-frequency')[:8]
+        if not queryset.exists():
+            raise NotFound("No word frequencies found for the provided transcription_id.")
+        
+        return queryset
+
+
+# CreateUserView uses UserModelSerializer for handling user creation
+class CreateUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer  # Corrected to use the serializer
+    permission_classes = [AllowAny]
+
+# Function to handle audio transcription
 def transcribe_audio(audio_file):
-    # Convert the Django InMemoryUploadedFile or file-like object to bytes
-    audio_data = audio_file.read()
+    recognizer = sr.Recognizer()
 
-    # Write the bytes to a temporary file if needed, or use in-memory processing
-    with open("temp_audio.mp3", "wb") as f:
-        f.write(audio_data)
-    
-    # Use audio2numpy to load the audio file
-    signal, sampling_rate = open_audio("temp_audio.mp3")
+    # Create a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_file:
+        temp_filename = temp_file.name
 
-    # Process signal with your model
-    transcription_response = model.transcribe(signal)
+        # Convert audio to WAV format using pydub
+        try:
+            audio = AudioSegment.from_file(audio_file, format='mp3')  # Adjust format if necessary
+            audio.export(temp_filename, format='wav')  # Convert to WAV format
+        except Exception as e:
+            return f"Error converting audio file: {e}"
 
-    return transcription_response
+    try:
+        # Load the audio file with speech_recognition
+        with sr.AudioFile(temp_filename) as source:
+            audio = recognizer.record(source)
+            # Perform transcription
+            transcription = recognizer.recognize_google(audio)
+            return transcription
+    except sr.UnknownValueError:
+        return "Google Speech Recognition could not understand the audio"
+    except sr.RequestError as e:
+        return f"Could not request results from Google Speech Recognition service; {e}"
+    finally:
+        # Clean up the temporary file
+        os.remove(temp_filename)
 
+# ViewSet to handle audio files
 class AudioFileViewSet(viewsets.ModelViewSet):
     queryset = AudioFile.objects.all()
     serializer_class = AudioFileSerializer
@@ -34,15 +114,136 @@ class AudioFileViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            audio_file = serializer.save()
+            # Save the audio file with the associated user
+            audio_file = serializer.save(user=request.user)
+
+            # Transcribe the audio file
             transcription_text = transcribe_audio(audio_file.audio)
-            transcription = Transcription(audio_file=audio_file, text=transcription_text)
-            transcription.save()
+
+            # Create the transcription and associate it with the user
+            transcription = Transcription.objects.create(
+                audio_file=audio_file,
+                text=transcription_text,
+                user=request.user  # Associate the transcription with the current user
+            )
+
+            # Tokenize and calculate word frequencies
+            tokens = word_tokenize(transcription_text.lower())
+            tokens = [word for word in tokens if word.isalpha()]  # Remove punctuation
+            word_freq = Counter(tokens)
+
+            # Save the word frequencies
+            for word, freq in word_freq.items():
+                WordFrequency.objects.create(transcription=transcription, word=word, frequency=freq)
+
+            # Serialize the transcription data and return the response
             transcription_serializer = TranscriptionSerializer(transcription)
             return Response(transcription_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class AudioFileDetailView(generics.RetrieveAPIView):
+    queryset = AudioFile.objects.all()
+    serializer_class = AudioFileDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class UserAudioFilesView(generics.ListAPIView):
+    serializer_class = AudioFileDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return AudioFile.objects.filter(user_id=user_id)
+
+# ViewSet to handle transcriptions
 class TranscriptionViewSet(viewsets.ModelViewSet):
     queryset = Transcription.objects.all()
     serializer_class = TranscriptionSerializer
+    
+    
+class TranscriptionListByUserIDView(generics.ListAPIView):
+    serializer_class = TranscriptionSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        transcript=Transcription.objects.filter(user_id=user_id)
+        return transcript
+
+
+# Ensuring CSRF token is set
+@ensure_csrf_cookie
+@require_http_methods(['GET'])
+def set_csrf_token(request):
+    return JsonResponse({'message': 'CSRF cookie set'})
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def login_view(request):
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        print(data)
+        username = data['username']
+        password = data['password']
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
+
+    user = authenticate(request, username=username, password=password)
+    
+    if user is None:
+      print("Authentication failed. User is None.")
+    if user:
+        login(request, user)
+        user_info = {
+                    'username': user.username,
+                    'email': user.email,
+                    'id':user.id
+                    # Add other fields if necessary
+                }
+        return JsonResponse({'success': True,'user':user_info})
+    return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
+
+# Logout view
+def logout_view(request):
+    logout(request)
+    return JsonResponse({'message': 'Logged out'})
+
+# Get current user information
+@require_http_methods(['GET'])
+def user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'username': request.user.username, 'email': request.user.email})
+    return JsonResponse({'message': 'Not logged in'}, status=401)
+
+@require_http_methods(['POST'])
+def register(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            print(data)
+            username = data.get('username')
+            email = data.get('email')
+            password = data.get('password')
+            
+            if not username or not email or not password:
+                return JsonResponse({'error': 'Missing required fields'}, status=400)
+
+            # Check if the email is already in use
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({'error': 'Email is already in use'}, status=400)
+
+            # Create the user
+            user = User(
+                username=username,
+                email=email,
+                password=make_password(password)  # Hash the password
+            )
+            user.save()
+
+            return JsonResponse({'message': 'User registered successfully!'})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+    
+

@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from .models import AudioFile
-#openai.api_key='sk-uNHcRTMzIxbBoAYsficC8P4FGjVDHjHIi5FpPuUI6tT3BlbkFJGxDHEdvvZVXXm8OMixWBwkW87TyaT0KEO9-TSMinkA'
 class AudioUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
