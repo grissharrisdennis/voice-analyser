@@ -12,15 +12,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tsparticles/vue3": "^3.0.1",
     "axios": "^1.7.5",
     "bootstrap": "^5.3.3",
     "chroma-js": "^3.0.0",
     "pinia": "^2.2.2",
     "simplex-noise": "^4.0.3",
     "three": "^0.167.1",
+    "tsparticles": "^3.5.0",
     "vue": "^3.4.37",
     "vue-router": "^4.4.3",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "web-particles": "^2.9.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
