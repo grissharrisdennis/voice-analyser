@@ -50,7 +50,7 @@
     methods: {
     async signup() {
       try {
-        const response = await fetch('http://localhost:8000/api/register/', {
+        const response = await fetch('http://localhost:9000/api/register/', {
           
           method: 'POST',
           
