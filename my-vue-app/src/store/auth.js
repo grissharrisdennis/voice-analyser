@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', {
     },
     actions: {
         async setCsrfToken() {
-            await fetch('https://GrissHarrisDennis.pythonanywhere.com/api/set-csrf-token/', {
+            await fetch('https://GrissHarrisDennis.pythonanywhere.com/api/set-csrf-token', {
                 method: 'GET',
                 credentials: 'include'
             })
