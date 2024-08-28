@@ -1,4 +1,3 @@
-
 <template>
   <div class="file-upload">
     <div v-if="!files" class="dropzone" @dragover.prevent="handleDragOver" @drop="handleDrop">
@@ -198,6 +197,5 @@ export default {
   background-color: #45a049;
 }
 </style>
-
 
   

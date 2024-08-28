@@ -86,9 +86,8 @@
   <style scoped>
    .login-dark {
     height:800px;
-    background-repeat: no-repeat,no-repeat;
+    background-color: #282c34;
     padding: 15px;
-    background-position: left,center,right;
     background-size: contain;
     
   }
@@ -135,13 +134,13 @@
       font-size: 16px;
       border-radius: 5px;
       border: none;
-      background-color: #4caf50;
+      background-color: #11f405;
       color: white;
       cursor: pointer;
     }
   
     button[type="submit"]:hover{
-      background-color:#000;
+      background-color:#367a57;
     }
      
   </style>

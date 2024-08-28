@@ -1,6 +1,6 @@
-
 <template>
   <NavBar />
+  
   <div class="home">
   <div class="header">
      <h1>Welcome to the Transcribe App</h1>
@@ -16,11 +16,13 @@
 <script>
 import LoginPopup from '../components/LoginPopup.vue'
 import NavBar from '../components/NavBar.vue';
+import Particles from '../components/ParticleJs.vue'
 export default {
   name: 'HomeView',
   components: {
     LoginPopup,
     NavBar,
+    Particles,
   },
   data() {
     return {
@@ -58,9 +60,12 @@ export default {
   font-size: calc(10px + 2vmin);
   color: white;
 }
+.header h1{
+  font-size: 45px;
+}
 .transcribe-button {
-  font-size: 16px;
-  padding: 10px 20px;
+  font-size: 35px;
+  padding: 20px 40px;
   background-color: #42b983;
   color: white;
   border: none;
@@ -75,4 +80,6 @@ export default {
 
 </style>
 
+
+  
   

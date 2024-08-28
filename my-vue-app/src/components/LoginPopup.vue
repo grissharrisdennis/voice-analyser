@@ -1,55 +1,68 @@
-
 <template>
-    <div v-if="isOpen" class="popup-overlay">
-      <div class="popup-content">
-        <button class="close-btn" @click="$emit('close')">×</button>
-        <h2>Login</h2>
-        <form @submit.prevent="handleLogin">
-      <br>
-      <div class="input-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model="email" placeholder="Enter your username">
-      </div>
-        <br>
-      <div class="input-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" placeholder="Enter your password">
-      </div>
-        <br>
-        <button type="log-in-button" >Log In</button>
+  <div v-if="isOpen" class="popup-overlay">
+    <div class="popup-content">
+      <button class="close-btn" @click="$emit('close')">×</button>
+      <h2>Login</h2>
+      <form @submit.prevent="login">
         <br>
         <br>
-        <a>Not Registered<router-link to="/register">Sign Up</router-link></a> 
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" v-model="username" placeholder="Enter your username">
+        </div>
+ 
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="password" placeholder="Enter your password">
+        </div>
+        <br>
+        <p v-if="error" class="error-message"><small>{{ error }}</small></p>
+        <button type="submit">Log In</button>
+        <br><br>
+        <h4>Not Registered?</h4>
+        <router-link to="/register"><button class="register">Register</button></router-link>
       </form>
-
-      </div>
+      
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'LoginPopup',
-    props: {
-      isOpen: {
-        type: Boolean,
-        required: true,
-      },
+  </div>
+</template>
+
+<script>
+import { useAuthStore } from '../store/auth';
+
+export default {
+  name: 'LoginPopup',
+  props: {
+    isOpen: {
+      type: Boolean,
+      required: true,
     },
-    data() {
-      return {
-        email: '',
-        password: '',
-      };
+  },
+  data() {
+    return {
+      username: '',
+      password: '',
+      error: '',
+    };
+  },
+  methods: {
+    async login() {
+      await this.authStore.login(this.username, this.password, this.$router);
+      if (!this.authStore.isAuthenticated) {
+        this.error = this.authStore.errorMessage || 'Please check your credentials.';
+      } else {
+        this.$emit('close');
+      }
     },
-    methods: {
-      handleLogin() {
-        // Handle login logic here
-        console.log('Logging in with', this.email, this.password);
-        this.$emit('close'); // Close the popup after login
-      },
-    },
-  };
-  </script>
+  },
+  setup() {
+    const authStore = useAuthStore();
+    return {
+      authStore,
+    };
+  },
+};
+</script>
   
   <style scoped>
   .popup-overlay {
@@ -68,13 +81,25 @@
     background: #283c86;
     padding: 20px;
     border-radius: 8px;
-    height:550px;
+    height:600px;
     width: 400px;
     text-align: center;
     position: relative;
   }
   h2{
     color:white;
+  }
+  .signup{
+    background-color: #42b983;
+    text-decoration: none;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .signup:hover {
+    background-color: #367a57;
   }
   .close-btn {
     position: absolute;
@@ -84,10 +109,16 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
+    background-color: white;
+    color:#11f405;
+  }
+  .close-btn:hover{
+    background-color: #11f405;
+    color: white;
   }
   
-  button {
-    background-color: #42b983;
+  .register{
+    background-color: #11f405;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -95,7 +126,7 @@
     cursor: pointer;
   }
   
-  button:hover {
+  .register:hover {
     background-color: #367a57;
   }
   

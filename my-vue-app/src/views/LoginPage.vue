@@ -1,4 +1,3 @@
-
 <template>
     <NavBar></NavBar>
     <div class="login-dark">
@@ -25,7 +24,7 @@
         <br>
         <br>
         <h4>Not Registered</h4>
-        <a><router-link to="/register">Sign Up</router-link></a> 
+        <button class="signup"><router-link to="/register">Sign Up</router-link></button> 
       </form>
       <p v-if="error" class="error">{{ error }}</p>
     </div>
@@ -71,15 +70,14 @@
   <style>
    .login-dark {
     height:800px;
-    background-repeat: no-repeat,no-repeat;
+    background-color: #282c34;
     padding: 15px;
-    background-position: left,center,right;
     background-size: contain;
     
   }
   .login-dark form {
     width: 500px;
-    height:600px;
+    height:610px;
     padding: 20px;
     position: static;
     border: 1px solid #ccc;
@@ -120,12 +118,29 @@
       font-size: 16px;
       border-radius: 5px;
       border: none;
-      background-color: #4caf50;
+      background-color: #11f405;
       color: white;
       cursor: pointer;
     }
-  
+    .h4{
+      color:#fff;
+    }
     button[type="submit"]:hover{
+      background-color:#367a57;
+    }
+    .signup {
+      width: 70%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      background-color: #11f405;
+      color: white;
+      cursor: pointer;
+      text-decoration: none;
+    }
+  
+    .signup:hover{
       background-color:#000;
     }
   </style>

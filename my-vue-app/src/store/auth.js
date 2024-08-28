@@ -1,4 +1,3 @@
-
 import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
@@ -89,6 +88,71 @@ export const useAuthStore = defineStore('auth', {
                 console.error('Error fetching audio file:', error);
             }
         },
+        async fetchTranscriptFile(userId) {
+            const csrfToken = getCSRFToken();
+            console.log('CSRF Token:', csrfToken);
+            try {
+                const response = await fetch(`http://localhost:8000/api/transcriptions/${userId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                this.transcriptlist = data;  // Handle the response data
+            } catch (error) {
+                console.error('Error fetching transcript file:', error);
+            }
+        },
+        async fetchTranscriptWords(transcriptId) {
+            const csrfToken = getCSRFToken();
+            console.log('CSRF Token:', csrfToken);
+            try {
+              const response = await fetch(`http://localhost:8000/api/word_frequencies/${transcriptId}/`, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfToken
+                },
+                credentials: 'include'
+              });
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              const data = await response.json();
+              this.wordsList = data; 
+              console.log('Words list:', JSON.stringify(this.wordsList));
+// Handle the response data
+            } catch (error) {
+              console.error('Error fetching transcript words:', error);
+            }
+          },
+          async fetchTopUniquePhrases(userId) {
+            const csrfToken = getCSRFToken();
+            console.log('CSRF Token:', csrfToken);
+            try {
+                const response = await fetch(`http://localhost:8000/api/transcriptions/uphrases/${userId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                this.uphrases = data;  // Handle the response data
+            } catch (error) {
+                console.error('Error fetching transcript file:', error);
+            }
+        },
         async fetchUser() {
             try {
                 const response = await fetch('http://localhost:8000/api/user/', {
@@ -154,3 +218,4 @@ export function getCSRFToken() {
     }
     return cookieValue;
 }
+
