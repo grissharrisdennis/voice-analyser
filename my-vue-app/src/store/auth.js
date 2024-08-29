@@ -7,33 +7,46 @@ export const useAuthStore = defineStore('auth', {
         const storedState = localStorage.getItem('authState');
         return storedState ? JSON.parse(storedState) : {
             user: null,
-            isAuthenticated: false
+            isAuthenticated: false,
+            csrfToken: null // Store CSRF token in state
         };
     },
     actions: {
         // Set CSRF token from the backend
         async setCsrfToken() {
-            await fetch('https://grissharrisdennis.pythonanywhere.com/api/set-csrf-token/', {
-                method: 'GET',
-                credentials: 'include'
-            });
+            try {
+                const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/set-csrf-token/', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    this.csrfToken = data.csrfToken; // Assume the backend returns a JSON object with csrfToken
+                    localStorage.setItem('csrfToken', this.csrfToken); // Store CSRF token in local storage
+                } else {
+                    throw new Error('Failed to set CSRF token');
+                }
+            } catch (error) {
+                console.error('Error setting CSRF token:', error);
+            }
         },
 
         // User login function
         async login(username, password, router = null) {
+            await this.setCsrfToken(); // Ensure the CSRF token is set before login
             const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/login/', {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
+                    'X-CSRFToken': this.csrfToken // Use the CSRF token stored in state
                 },
                 body: JSON.stringify({ username, password }),
             });
             const data = await response.json();
             if (data.success) {
                 this.user = {
-                    id: data.user.id,  // Store the user ID
+                    id: data.user.id,
                     username: data.user.username,
                     email: data.user.email
                 };
@@ -55,7 +68,7 @@ export const useAuthStore = defineStore('auth', {
                 const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/logout/', {
                     method: 'POST',
                     headers: {
-                        'X-CSRFToken': getCSRFToken()
+                        'X-CSRFToken': this.csrfToken // Use the stored CSRF token
                     },
                     credentials: 'include'
                 });
@@ -75,14 +88,12 @@ export const useAuthStore = defineStore('auth', {
 
         // Fetch audio files associated with a user
         async fetchAudioFile(userId) {
-            const csrfToken = getCSRFToken();
-            console.log('CSRF Token:', csrfToken);
             try {
                 const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/audiofiles/user/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
+                        'X-CSRFToken': this.csrfToken // Use the stored CSRF token
                     },
                     credentials: 'include'
                 });
@@ -98,14 +109,12 @@ export const useAuthStore = defineStore('auth', {
 
         // Fetch transcript files associated with a user
         async fetchTranscriptFile(userId) {
-            const csrfToken = getCSRFToken();
-            console.log('CSRF Token:', csrfToken);
             try {
                 const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/transcriptions/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
+                        'X-CSRFToken': this.csrfToken // Use the stored CSRF token
                     },
                     credentials: 'include'
                 });
@@ -121,14 +130,12 @@ export const useAuthStore = defineStore('auth', {
 
         // Fetch word frequencies for a given transcript
         async fetchTranscriptWords(transcriptId) {
-            const csrfToken = getCSRFToken();
-            console.log('CSRF Token:', csrfToken);
             try {
                 const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/word_frequencies/${transcriptId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
+                        'X-CSRFToken': this.csrfToken // Use the stored CSRF token
                     },
                     credentials: 'include'
                 });
@@ -145,14 +152,12 @@ export const useAuthStore = defineStore('auth', {
 
         // Fetch top unique phrases associated with a user
         async fetchTopUniquePhrases(userId) {
-            const csrfToken = getCSRFToken();
-            console.log('CSRF Token:', csrfToken);
             try {
                 const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/transcriptions/uphrases/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
+                        'X-CSRFToken': this.csrfToken // Use the stored CSRF token
                     },
                     credentials: 'include'
                 });
@@ -173,7 +178,7 @@ export const useAuthStore = defineStore('auth', {
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken()
+                        'X-CSRFToken': this.csrfToken // Use the stored CSRF token
                     },
                 });
                 if (response.ok) {
@@ -196,28 +201,9 @@ export const useAuthStore = defineStore('auth', {
         saveState() {
             localStorage.setItem('authState', JSON.stringify({
                 user: this.user,
-                isAuthenticated: this.isAuthenticated
+                isAuthenticated: this.isAuthenticated,
+                csrfToken: this.csrfToken // Save CSRF token to state
             }));
         }
     }
 });
-
-// Helper function to get CSRF token from cookies
-export function getCSRFToken() {
-    const name = 'csrftoken';
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    if (cookieValue === null) {
-        throw 'Missing CSRF cookie.';
-    }
-    return cookieValue;
-}
