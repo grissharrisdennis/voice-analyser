@@ -19,12 +19,13 @@ export const useAuthStore = defineStore('auth', {
         async login(username, password, router=null) {
             const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/login/', {
                 method: 'POST',
+                credentials: 'include'
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCSRFToken()
                 },
                 body: JSON.stringify({ username, password }),
-                credentials: 'include'
+                
             })
             const data = await response.json()
             if (data.success) {
