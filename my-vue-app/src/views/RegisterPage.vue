@@ -1,87 +1,91 @@
 <template>
-    <NavBar></NavBar>
-    <div class="login-dark">
-      
+  <NavBar></NavBar>
+  <div class="login-dark">
     <form @submit.prevent="signup">
       <br>
-        <h5>Register</h5>
+      <h5>Register</h5>
       <br>
       <br>
       <div class="input-group">
         <label for="username">Username</label>
-        <input type="username" id="username" v-model="username" placeholder="Enter your username">
+        <input type="text" id="username" v-model="username" placeholder="Enter your username">
       </div>
-        <br>
-        <br>
+      <br>
+      <br>
       <div class="input-group">
         <label for="email">Email</label>
-        <input type="email" id="email" v-model="email" placeholder="Enter your password">
+        <input type="email" id="email" v-model="email" placeholder="Enter your email">
       </div>
-        <br>
-        <br>
-        <div class="input-group">
+      <br>
+      <br>
+      <div class="input-group">
         <label for="password">Password</label>
         <input type="password" id="password" v-model="password" placeholder="Enter your password">
       </div>
-        <br>
-        <button type="submit">Register</button>
-        <br>
-        <br>
-      </form>
-    </div>
-    
-  </template>
-  
-  <script>
-  import { getCSRFToken } from '../store/auth'
-  import NavBar from '../components/NavBar.vue';
-  export default {
-      name:'RegisterPage',
-      components: {
-      NavBar,
-    },
-      data() {
-      return {
-        username: '',
-        password: '',
-        email:'',
-      };
-    },
-    methods: {
+      <br>
+      <button type="submit">Register</button>
+      <br>
+      <br>
+    </form>
+  </div>
+</template>
+
+<script>
+import { useAuthStore } from '../store/auth'; // Import the store
+import NavBar from '../components/NavBar.vue';
+
+export default {
+  name: 'RegisterPage',
+  components: {
+    NavBar,
+  },
+  data() {
+    return {
+      username: '',
+      password: '',
+      email: '',
+    };
+  },
+  methods: {
     async signup() {
+      const authStore = useAuthStore(); // Access the auth store
+
       try {
-        const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/register/', {
-          
+        // Ensure CSRF token is set before making the registration request
+        await authStore.setCsrfToken();
+
+        const response = await fetch('http://localhost:8000/api/register/', {
           method: 'POST',
-          
-           headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': authStore.csrfToken, // Use the CSRF token from the store
+          },
           body: JSON.stringify({
-            username:this.username,
+            username: this.username,
             email: this.email,
             password: this.password
           }),
           credentials: 'include'
-        })
-        const data = await response.json()
-        console.log(response)
+        });
+
+        const data = await response.json();
+        console.log(response);
+
         if (response.ok) {
-          this.success = 'Registration successful! Please log in.'
+          this.success = 'Registration successful! Please log in.';
           setTimeout(() => {
-            this.$router.push('/login')
-          }, 1000)
+            this.$router.push('/login');
+          }, 1000);
         } else {
-          this.error = data.error || 'Registration failed'
+          this.error = data.error || 'Registration failed';
         }
       } catch (err) {
-        this.error = 'An error occurred during registration: ' + err
+        this.error = 'An error occurred during registration: ' + err;
       }
     }
-    }
   }
-  </script>
+}
+</script>
   
   <style scoped>
    .login-dark {
