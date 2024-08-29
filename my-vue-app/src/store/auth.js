@@ -219,5 +219,4 @@ export function getCSRFToken() {
     return cookieValue;
 }
 
-const csrftoken = getCSRFToken('csrftoken');
-console.log(csrftoken);
+
