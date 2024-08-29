@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
+                    // 'X-CSRFToken': getCSRFToken()
                 },
                 body: JSON.stringify({ username, password }),
                 credentials: 'include'
