@@ -34,16 +34,16 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
-import { useAuthStore } from '../store/auth.js'
-import { useRouter } from 'vue-router'
-import { getCSRFToken } from '../store/auth.js'
+import { useAuthStore } from '../store/auth.js';
+import { useRouter } from 'vue-router';
+
 export default {
   name: 'FileUpload',
   setup() {
-    const authStore = useAuthStore()
-    const router = useRouter()
+    const authStore = useAuthStore();
+    const router = useRouter();
     const files = ref(null);
     const audioPreview = ref(null);
     const transcription = ref('');
@@ -70,19 +70,22 @@ export default {
     const handleFileUpload = async () => {
       if (!files.value) return;
 
+      // Ensure CSRF token is set before uploading files
+      await authStore.setCsrfToken();
+
       const formData = new FormData();
       Array.from(files.value).forEach((file) => {
         formData.append('audio', file);
       });
 
       try {
-        const response = await axios.post('https://GrissHarrisDennis.pythonanywhere.com/api/audiofiles/', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'X-CSRFToken': getCSRFToken(),  // Ensure this function returns the correct token
-      },
-      withCredentials: true,  // Make sure credentials are included if needed
-    });
+        const response = await axios.post('http://localhost:8000/api/audiofiles/', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-CSRFToken': authStore.csrfToken, // Use the CSRF token from the store
+          },
+          withCredentials: true,
+        });
 
         if (response.status === 201) {
           uploadStatus.value = 'Files uploaded successfully!';
@@ -107,30 +110,15 @@ export default {
       inputRef.value.click();
     };
 
-    // const copyToClipboard = () => {
-    //   navigator.clipboard.writeText(transcription.value).then(() => {
-    //     alert('Transcription copied to clipboard!');
-    //   });
-    // };
-  //   const copyToClipboard = () => {
-  //     var copyText = document.getElementById("transcript");
-
-  // // Select the text field
-  //     copyText.select();
-  //     copyText.setSelectionRange(0, 99999); // For mobile devices
-
-  //  // Copy the text inside the text field
-  //      navigator.clipboard.writeText(copyText.value);
-
-  // // Alert the copied text
-  //     alert("Copied the text: " + copyText.value);
-  //   };
-  function copyToClipboard() {
-  const element = document.querySelector('transcript');
-  element.select();
-  element.setSelectionRange(0, 99999);
-  document.execCommand('copy');
-}
+    const copyToClipboard = () => {
+      const element = document.getElementById('transcript');
+      const range = document.createRange();
+      range.selectNode(element);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+    };
 
     return {
       authStore,
@@ -146,15 +134,15 @@ export default {
       handleFileUpload,
       handleCancel,
       triggerFileSelect,
+      copyToClipboard
     };
   },
   mounted() {
-        this.authStore.fetchUser();
-        const authStore = useAuthStore();
-    }
+    this.authStore.fetchUser();
+  }
 };
-
 </script>
+
 
 <style scoped>
 .dropzone {
