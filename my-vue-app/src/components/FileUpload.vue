@@ -79,7 +79,7 @@ export default {
       });
 
       try {
-        const response = await axios.post('http://localhost:8000/api/audiofiles/', formData, {
+        const response = await axios.post('https://grissharrisdennis.pythonanywhere.com/api/audiofiles/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'X-CSRFToken': authStore.csrfToken, // Use the CSRF token from the store
