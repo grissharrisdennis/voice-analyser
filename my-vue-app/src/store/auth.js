@@ -219,5 +219,5 @@ export function getCSRFToken() {
     return cookieValue;
 }
 
-const csrftoken = getCookie('csrftoken');
+const csrftoken = getCSRFToken('csrftoken');
 console.log(csrftoken);
