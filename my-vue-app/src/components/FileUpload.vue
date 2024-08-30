@@ -70,19 +70,18 @@ export default {
     const handleFileUpload = async () => {
       if (!files.value) return;
 
-      // Ensure CSRF token is set before uploading files
-      await authStore.setCsrfToken();
-
       const formData = new FormData();
       Array.from(files.value).forEach((file) => {
         formData.append('audio', file);
       });
 
       try {
-        const response = await axios.post('https://grissharrisdennis.pythonanywhere.com/api/audiofiles/', formData, {
+        const token = authStore.getToken(); // Get the JWT token from the auth store
+
+        const response = await axios.post('http://localhost:8000/api/audiofiles/', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'X-CSRFToken': authStore.csrfToken, // Use the CSRF token from the store
+            'Authorization': `Bearer ${token}`, // Add the JWT token in the Authorization header
           },
           withCredentials: true,
         });
