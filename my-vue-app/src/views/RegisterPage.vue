@@ -51,10 +51,7 @@ export default {
       const authStore = useAuthStore(); // Access the auth store
 
       try {
-        // Ensure CSRF token is set before making the registration request
-        await authStore.setCsrfToken();
-
-        const response = await fetch('http://localhost:8000/api/register/', {
+        const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/register/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
