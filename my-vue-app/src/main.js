@@ -15,8 +15,4 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-
-const authStore = useAuthStore()
-authStore.setCsrfToken()
-
 app.mount('#app')
