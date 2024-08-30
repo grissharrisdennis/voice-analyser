@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', {
     },
     actions: {
         async login(username, password, router = null) {
-            const response = await fetch('https://grissharrisdennis.pythonanywhere.com//api/token-auth/', {
+            const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/token-auth/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('auth', {
 
         async fetchAudioFile(userId) {
             try {
-                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com//api/audiofiles/user/${userId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/audiofiles/user/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', {
 
         async fetchTranscriptFile(userId) {
             try {
-                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com//api/transcriptions/${userId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/transcriptions/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const useAuthStore = defineStore('auth', {
 
         async fetchTranscriptWords(transcriptId) {
             try {
-                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com//api/word_frequencies/${transcriptId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/word_frequencies/${transcriptId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -108,7 +108,7 @@ export const useAuthStore = defineStore('auth', {
 
         async fetchTopUniquePhrases(userId) {
             try {
-                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com//api/transcriptions/uphrases/${userId}/`, {
+                const response = await fetch(`https://grissharrisdennis.pythonanywhere.com/api/transcriptions/uphrases/${userId}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ export const useAuthStore = defineStore('auth', {
 
         async fetchUser() {
             try {
-                const response = await fetch('https://grissharrisdennis.pythonanywhere.com//api/user/', {
+                const response = await fetch('https://grissharrisdennis.pythonanywhere.com/api/user/', {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${this.token}`
