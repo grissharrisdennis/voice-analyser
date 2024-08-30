@@ -58,7 +58,6 @@ export default {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': authStore.csrfToken, // Use the CSRF token from the store
           },
           body: JSON.stringify({
             username: this.username,
