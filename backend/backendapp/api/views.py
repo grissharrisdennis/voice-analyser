@@ -1,6 +1,5 @@
 from rest_framework.response import Response
 from rest_framework import status, viewsets, generics
-from django.shortcuts import render,get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from ..models import AudioFile, Transcription,WordFrequency
 from .serializers import AudioFileSerializer, TranscriptionSerializer, AudioFileDetailSerializer,UserModelSerializer,WordFrequencySerializer
@@ -21,6 +20,10 @@ nltk.download('punkt_tab')
 from nltk.tokenize import word_tokenize
 from collections import Counter
 from nltk import ngrams
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 def normalize(text):
     return text.lower().split()
@@ -62,11 +65,10 @@ class WordFrequencyByTranscriptionIDView(generics.ListAPIView):
 
     def get_queryset(self):
         transcription_id = self.kwargs.get('transcript_id')
-        # Return the word frequencies associated with the transcription_id
         queryset = WordFrequency.objects.filter(transcription_id=transcription_id).order_by('-frequency')[:8]
         if not queryset.exists():
             raise NotFound("No word frequencies found for the provided transcription_id.")
-        
+
         return queryset
 
 
@@ -142,10 +144,6 @@ class AudioFileViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AudioFileDetailView(generics.RetrieveAPIView):
-    queryset = AudioFile.objects.all()
-    serializer_class = AudioFileDetailSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class UserAudioFilesView(generics.ListAPIView):
@@ -156,12 +154,18 @@ class UserAudioFilesView(generics.ListAPIView):
         user_id = self.kwargs['user_id']
         return AudioFile.objects.filter(user_id=user_id)
 
-# ViewSet to handle transcriptions
-class TranscriptionViewSet(viewsets.ModelViewSet):
-    queryset = Transcription.objects.all()
-    serializer_class = TranscriptionSerializer
-    
-    
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+
+
 class TranscriptionListByUserIDView(generics.ListAPIView):
     serializer_class = TranscriptionSerializer
 
@@ -171,68 +175,28 @@ class TranscriptionListByUserIDView(generics.ListAPIView):
         return transcript
 
 
-# Ensuring CSRF token is set
-@ensure_csrf_cookie
-@require_http_methods(['GET'])
-def set_csrf_token(request):
-    return JsonResponse({'message': 'CSRF cookie set'})
+class MyTokenObtainPairView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+
+
 
 @csrf_exempt
-@require_http_methods(['POST'])
-def login_view(request):
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-        print(data)
-        username = data['username']
-        password = data['password']
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
-
-    user = authenticate(request, username=username, password=password)
-    
-    if user is None:
-      print("Authentication failed. User is None.")
-    if user:
-        login(request, user)
-        user_info = {
-                    'username': user.username,
-                    'email': user.email,
-                    'id':user.id
-                    # Add other fields if necessary
-                }
-        return JsonResponse({'success': True,'user':user_info})
-    return JsonResponse({'success': False, 'message': 'Invalid credentials'}, status=401)
-
-# Logout view
-def logout_view(request):
-    logout(request)
-    return JsonResponse({'message': 'Logged out'})
-
-# Get current user information
-@require_http_methods(['GET'])
-def user(request):
-    if request.user.is_authenticated:
-        return JsonResponse({'username': request.user.username, 'email': request.user.email})
-    return JsonResponse({'message': 'Not logged in'}, status=401)
-
-@require_http_methods(['POST'])
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body.decode('utf-8'))
-            print(data)
             username = data.get('username')
             email = data.get('email')
             password = data.get('password')
-            
+
             if not username or not email or not password:
                 return JsonResponse({'error': 'Missing required fields'}, status=400)
 
-            # Check if the email is already in use
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'error': 'Email is already in use'}, status=400)
 
-            # Create the user
             user = User(
                 username=username,
                 email=email,
@@ -240,10 +204,47 @@ def register(request):
             )
             user.save()
 
-            return JsonResponse({'message': 'User registered successfully!'})
+            # Automatically login the user and issue a token
+            user = authenticate(username=username, password=password)
+            jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+            jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+            payload = jwt_payload_handler(user)
+            token = jwt_encode_handler(payload)
+
+            return JsonResponse({
+                'message': 'User registered successfully!',
+                'token': token  # Return the JWT token
+            })
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
     else:
         return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+@ensure_csrf_cookie
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def custom_token_auth(request):
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        from rest_framework_simplejwt.tokens import RefreshToken
+        refresh = RefreshToken.for_user(user)
+        return JsonResponse({
+            'token': str(refresh.access_token),
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+        }, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
     
 
