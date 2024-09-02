@@ -80,15 +80,15 @@ export default {
   width: 100%;
   position: relative;
 }
-.header{
+.header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 0 20px;
 }
 .header h1{
   font-size: 45px;
