@@ -109,8 +109,8 @@ export default {
   cursor: pointer;
 }
 .icon-container {
-  width: 350px;
-  height: 350px;
+  width: 150px;
+  height: 150px;
   animation: rotate 5s linear infinite;
 }
 
