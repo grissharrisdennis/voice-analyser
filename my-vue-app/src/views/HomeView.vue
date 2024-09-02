@@ -1,28 +1,31 @@
 <template>
   <NavBar />
-  
+
   <div class="home">
-  <div class="header">
-     <h1>Welcome to the Transcribe App</h1>
-     <br>
-     <button class="transcribe-button" @click="openPopup">
-       Start Transcribing
-      </button>
+    <div class="header">
+      <div class="text-container">
+        <h1>Transcribe Your Audio Easily</h1>
+        <br>
+        <br>
+        <button class="transcribe-button" @click="openPopup">
+          Transcribe Now
+        </button>
+      </div>
       <LoginPopup :isOpen="isPopupOpen" @close="closePopup" />
-  </div>
+    </div>
   </div>
 </template>
 
 <script>
+  import { gsap } from 'gsap';
 import LoginPopup from '../components/LoginPopup.vue'
 import NavBar from '../components/NavBar.vue';
-import Particles from '../components/ParticleJs.vue'
+
 export default {
   name: 'HomeView',
   components: {
     LoginPopup,
     NavBar,
-    Particles,
   },
   data() {
     return {
@@ -36,6 +39,30 @@ export default {
     closePopup() {
       this.isPopupOpen = false;
     },
+  },
+  mounted() {
+    gsap.from('.text-container', {
+      duration: 1,
+      x: -200,
+      opacity: 0,
+      ease: 'power3.out',
+    });
+    
+    // gsap.from('.icon-container', {
+    //   duration: 1,
+    //   x: 200,
+    //   opacity: 0,
+    //   ease: 'power3.out',
+    //   delay: 0.5,
+    // });
+    
+    gsap.from('.transcribe-button', {
+      duration: 1,
+      y: 50,
+      opacity: 0,
+      ease: 'power3.out',
+      delay: 1,
+    });
   },
 }
 </script>
@@ -62,6 +89,12 @@ export default {
 }
 .header h1{
   font-size: 45px;
+}
+  .text-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: 20px;
 }
 .transcribe-button {
   font-size: 35px;
