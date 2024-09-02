@@ -4,7 +4,7 @@ Voice Analyzer Application
 Overview
 The Voice Analyzer Application is a Django-Vue application that allows users to upload audio files, which are then transcribed into text. The application uses the speech_recognition package for converting audio to text and nltk for analyzing the text data. It provides a user-friendly interface where users can view the transcribed text and perform word analysis.
 
-The Django backend is hosted on PythonAnywhere, while the Vue frontend is hosted on Vercel. JWT authentication is used for securing user interactions.
+The Django backend is hosted on PythonAnywhere, while the Vue frontend is hosted on Vercel. JWT authentication is used for securing user interactions
 
 Features
 Audio Transcription: Upload audio files to receive text transcriptions.
