@@ -220,7 +220,7 @@ export default {
    position: relative;
    margin: 5px;
    float:left;
-   width:18%;
+   width:25%;
    height:40px;
   border: 1px solid #ddd; /* Light border for the boxes */
   border-radius: 4px; /* Rounded corners */
