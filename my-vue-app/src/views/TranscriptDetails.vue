@@ -35,9 +35,9 @@
         <div v-if="transcriptlist">
           <ul>
             <li v-for="(transcript, index) in transcriptlist" :key="transcript.id">
-              <strong>Transcript {{ transcript.id }}</strong>
+              <strong>Transcript Words</strong>
               <button class="fetch" @click="fetchWords(transcript.id, index)" :disabled="transcriptLoading[index]">
-                Fetch Words
+                Fetch Word Frequencies
               </button>
               <!-- Loading spinner for each fetch button -->
               <div v-if="transcriptLoading[index]" class="spinner-container">
