@@ -11,6 +11,9 @@
           Transcribe Now
         </button>
       </div>
+      <div class="icon-container">
+        <img src="../assets/audio.jpg" alt="Transcribe Icon" class="transcribe-icon" />
+      </div>
       <LoginPopup :isOpen="isPopupOpen" @close="closePopup" />
     </div>
   </div>
@@ -104,6 +107,11 @@ export default {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+.icon-container {
+  width: 350px;
+  height: 350px;
+  animation: rotate 5s linear infinite;
 }
 
 .transcribe-button:hover {
