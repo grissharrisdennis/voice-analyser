@@ -117,6 +117,11 @@ export default {
 .transcribe-button:hover {
   background-color: #367a57;
 }
+  .transcribe-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 
 </style>
