@@ -23,14 +23,12 @@ cd voice-analyzer-app/backend
 
 Create a Virtual Environment
 
-bash
-Copy code
+
 python -m venv env
 source env/bin/activate  # On Windows use `env\Scripts\activate`
 Install Dependencies
 
-bash
-Copy code
+]
 pip install -r requirements.txt
 Run Migrations
 
@@ -69,7 +67,7 @@ nltk: Natural Language Toolkit for text analysis.
 Vue.js: A progressive JavaScript framework for building user interfaces.
 To install the required Python packages, add the following to your requirements.txt file:
 
-Copy code
+
 Django
 speech_recognition
 nltk
@@ -78,7 +76,7 @@ djangorestframework-jwt
 To install the required Node.js packages, ensure that package.json includes:
 
 json
-Copy code
+
 {
   "dependencies": {
     "vue": "^3.0.0",
