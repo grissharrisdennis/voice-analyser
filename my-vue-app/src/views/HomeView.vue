@@ -93,12 +93,13 @@ export default {
 .header h1{
   font-size: 45px;
 }
-  .text-container {
+ .text-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-right: 20px;
 }
+
 .transcribe-button {
   font-size: 35px;
   padding: 20px 40px;
