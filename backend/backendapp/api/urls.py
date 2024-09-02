@@ -1,16 +1,17 @@
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from .views import AudioFileViewSet,UserAudioFilesView,get_top_unique_phrases,TranscriptionViewSet,WordFrequencyByTranscriptionIDView,set_csrf_token,login_view,logout_view,user,register,TranscriptionListByUserIDView
+from .views import AudioFileViewSet,UserAudioFilesView,UserDetailView,TranscriptionListByUserIDView,WordFrequencyByTranscriptionIDView
+from .views import custom_token_auth,get_top_unique_phrases,register
+from rest_framework_simplejwt.views import TokenRefreshView
+
 
 router = DefaultRouter()
 router.register(r'audiofiles', AudioFileViewSet)
-router.register(r'transcriptions', TranscriptionViewSet)
 
 urlpatterns = [
-    path('set-csrf-token/', set_csrf_token, name='set_csrf_token'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('user/', user, name='user'),
+    path('token-auth/', custom_token_auth, name='token_auth'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('user/', UserDetailView.as_view(), name='user'),
     path('register/', register, name='register'),
      path('transcriptions/uphrases/<int:user_id>/', get_top_unique_phrases, name='unique-phrases'),
     path('audiofiles/user/<int:user_id>/', UserAudioFilesView.as_view(), name='user-audiofiles'),
