@@ -16,7 +16,8 @@ User Interface: Intuitive Vue.js frontend for seamless user experience.
 
 ### Backend (Django)
 Clone the Repository
-**`git clone https://github.com/yourusername/voice-analyzer-app.git`**
+
+``` ``` git clone https://github.com/yourusername/voice-analyzer-app.git ``` ```
 
 cd voice-analyzer-app/backend
 
@@ -90,6 +91,13 @@ JWT Authentication
 The application uses JWT (JSON Web Tokens) for authentication. Ensure that your backend is configured to handle JWT tokens properly. Documentation for setting up JWT authentication in Django can be found here.
 
 Deployment
+JWT Authentication
+The application uses JWT (JSON Web Tokens) for authentication. Ensure that your backend is configured to handle JWT tokens properly. Documentation for setting up JWT authentication in Django can be found here.
+
+Deployment
+Backend: Deployed on PythonAnywhere. Follow PythonAnywhere's deployment guide for Django.
+Frontend: Deployed on Vercel. Follow Vercel's deployment guide for Vue.js applications.
+This markdown is now properly formatted to be pasted into your GitHub README file
 Backend: Deployed on PythonAnywhere. Follow PythonAnywhere's deployment guide for Django.
 Frontend: Deployed on Vercel. Follow Vercel's deployment guide for Vue.js applications.
 Usage
