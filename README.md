@@ -15,90 +15,75 @@ User Interface: Intuitive Vue.js frontend for seamless user experience.
 ## Installation
 
 ### Backend (Django)
-Clone the Repository
+#### Clone the Repository
 
-``` ``` git clone https://github.com/yourusername/voice-analyzer-app.git ``` ```
+<pre><code> git clone https://github.com/yourusername/voice-analyzer-app.git </code></pre>
 
-cd voice-analyzer-app/backend
+<pre><code>cd voice-analyzer-app/backend</code></pre>
 
-Create a Virtual Environment
+#### Create a Virtual Environment
 
+<pre><code>python -m venv env</code></pre>
+<pre><code>source env/bin/activate </code></pre>
+#### On Windows
+use <pre><code>env\Scripts\activate</pre></code>
+#### Install Dependencies
 
-python -m venv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
-Install Dependencies
+<pre><code>pip install -r requirements.txt</code></pre>
 
-]
-pip install -r requirements.txt
-Run Migrations
+#### Run Migrations
 
-bash
-Copy code
-python manage.py migrate
-Run the Development Server
+<pre><code>python manage.py migrate</code></pre>
 
-bash
-Copy code
-python manage.py runserver
+#### Run the Development Server
+
+<pre><code>python manage.py runserver</code></pre>
+
 The backend is hosted on PythonAnywhere and should be deployed as described in their documentation.
 
 ### Frontend (Vue.js)
-Navigate to the Frontend Directory
+#### Navigate to the Frontend Directory
 
-bash
-Copy code
-cd ../frontend
-Install Dependencies
+<pre><code>cd voice-analyzer-app/my-vue-app</code></pre>
 
-bash
-Copy code
-npm install
-Run the Development Server
+#### Install Dependencies
 
-bash
-Copy code
-npm run serve
+<pre><code>npm install</code></pre>
+
+#### Run the Development Server
+
+<pre><code>npm run dev</code></pre>
+
 The frontend is hosted on Vercel and should be deployed as described in their documentation.
 
-Dependencies
-Django: A high-level Python web framework.
-speech_recognition: A library for speech recognition.
-nltk: Natural Language Toolkit for text analysis.
-Vue.js: A progressive JavaScript framework for building user interfaces.
-To install the required Python packages, add the following to your requirements.txt file:
+#### Dependencies
+##### - Django: A high-level Python web framework.
+##### - speech_recognition: A library for speech recognition.
+##### - nltk: Natural Language Toolkit for text analysis.
+##### - Vue.js: A progressive JavaScript framework for building user interfaces.
+##### - To install the required Python packages, add the following to your requirements.txt file:
 
 
-Django
-speech_recognition
-nltk
-djangorestframework
-djangorestframework-jwt
-To install the required Node.js packages, ensure that package.json includes:
+  ###### - Django
+  ###### - speech_recognition
+  ###### - nltk
+  ###### - djangorestframework
+  ###### - djangorestframework-jwt
 
-json
 
-{
-  "dependencies": {
-    "vue": "^3.0.0",
-    "axios": "^0.21.1",
-    "vue-router": "^4.0.0",
-    // other dependencies
-  }
-}
-JWT Authentication
+### JWT Authentication
 The application uses JWT (JSON Web Tokens) for authentication. Ensure that your backend is configured to handle JWT tokens properly. Documentation for setting up JWT authentication in Django can be found here.
 
-Deployment
-JWT Authentication
-The application uses JWT (JSON Web Tokens) for authentication. Ensure that your backend is configured to handle JWT tokens properly. Documentation for setting up JWT authentication in Django can be found here.
+### Deployment
 
-Deployment
-Backend: Deployed on PythonAnywhere. Follow PythonAnywhere's deployment guide for Django.
-Frontend: Deployed on Vercel. Follow Vercel's deployment guide for Vue.js applications.
-This markdown is now properly formatted to be pasted into your GitHub README file
-Backend: Deployed on PythonAnywhere. Follow PythonAnywhere's deployment guide for Django.
-Frontend: Deployed on Vercel. Follow Vercel's deployment guide for Vue.js applications.
-Usage
-Upload Audio: Use the frontend to upload an audio file.
-View Transcription: Receive and view the transcribed text.
-Analyze Text: Perform text analysis using the nltk library.
+#### Backend 
+Deployed on PythonAnywhere. Follow PythonAnywhere's deployment guide for Django.
+#### Frontend
+Deployed on Vercel. Follow Vercel's deployment guide for Vue.js applications.
+
+#### Upload Audio
+Use the frontend to upload an audio file.
+#### View Transcription
+Receive and view the transcribed text.
+#### Analyze Text
+Perform text analysis using the nltk library.
