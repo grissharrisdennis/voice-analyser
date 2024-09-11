@@ -155,7 +155,7 @@ button .spinner {
     transform: rotate(360deg);
   }
 }
-    .h4{
+    .login-dark h4{
       color:#fff;
     }
     .signup {
