@@ -20,7 +20,11 @@
         <br>
         <br>
         <br>
-        <button type="submit" >Log In</button>
+        <button type="submit" :disabled="isLoading">
+        <span v-if="isLoading" class="spinner"></span>
+        <span v-if="!isLoading">Log In</span>
+        <span v-if="isLoading">Loading...</span>
+      </button>
         <br>
         <br>
         <h4>Not Registered</h4>
@@ -49,12 +53,15 @@
       return {
         username: '',
         password: '',
-        error: ""
+        error: "",
+        isLoading: false,
       };
     },
     methods: {
       async login(){
+      isLoading: true;
       await this.authStore.login(this.username, this.password, this.$router)
+      isLoading: false;
       if (!this.authStore.isAuthenticated){
          this.error = this.authStore.errorMessage || 'Login failed. Please check your credentials.'
       }
@@ -121,12 +128,35 @@
       background-color: #11f405;
       color: white;
       cursor: pointer;
+      position: relative;
     }
+      button[type='submit']:hover {
+  background-color: #367a57;
+}
+button[type='submit']:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+button .spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
     .h4{
       color:#fff;
-    }
-    button[type="submit"]:hover{
-      background-color:#367a57;
     }
     .signup {
       width: 70%;
