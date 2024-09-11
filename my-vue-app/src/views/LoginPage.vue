@@ -28,7 +28,7 @@
         <br>
         <br>
         <h4>Not Registered</h4>
-        <button class="signup"><router-link to="/register">Sign Up</router-link></button> 
+       <router-link to="/register"> <button class="signup">Sign Up</button> </router-link>
       </form>
       <p v-if="error" class="error">{{ error }}</p>
     </div>
