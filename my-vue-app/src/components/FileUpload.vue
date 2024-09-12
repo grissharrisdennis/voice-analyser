@@ -76,7 +76,7 @@ export default {
       });
 
       try {
-        const token = authStore.getToken(); // Get the JWT token from the auth store
+        const token = authStore.token; // Get the JWT token from the auth store
 
         const response = await axios.post('https://grissharrisdennis.pythonanywhere.com/api/audiofiles/', formData, {
           headers: {
